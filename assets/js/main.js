@@ -33,21 +33,60 @@ const productSwiper = new Swiper('.product-swiper', {
             slidesPerView: 3,
             spaceBetween: 30,
         },
-        1440: {
-            slidesPerView: 4,
-            spaceBetween: 40,
-        },
     },
 });
 
+let isMenuOrSearchActive = false;
+let isMobile = window.innerWidth <= 1120;
+
 const toggleMenu = document.querySelector('.menu-icon img');
 const menu = document.querySelector('.menu');
-toggleMenu.addEventListener('click', () => {
-    menu.classList.toggle('active');
-});
-
 const toggleSearch = document.querySelector('.search-icon img');
 const search = document.querySelector('.search');
-toggleSearch.addEventListener('click', () => {
-    search.classList.toggle('active');
+
+function resetMenuAndSearch() {
+    isMenuOrSearchActive = false;
+    menu.classList.remove('active');
+    search.classList.remove('active');
+    toggleMenu.style.pointerEvents = 'auto';
+    toggleMenu.style.opacity = '1';
+    toggleSearch.style.pointerEvents = 'auto';
+    toggleSearch.style.opacity = '1';
+}
+
+function handleResize() {
+    const waseMobile = isMobile;
+    isMobile = window.innerWidth <= 1120;
+
+    if (waseMobile !== isMobile) {
+        resetMenuAndSearch();
+    }
+}
+
+window.addEventListener('resize', handleResize);
+
+toggleMenu.addEventListener('click', () => {
+    if (!isMenuOrSearchActive || menu.classList.contains('active')) {
+        menu.classList.toggle('active');
+        isMenuOrSearchActive = menu.classList.contains('active');
+
+        if (isMobile) {
+            toggleSearch.style.pointerEvents = isMenuOrSearchActive ? 'none' : 'auto';
+            toggleSearch.style.opacity = isMenuOrSearchActive ? '0.4' : '1';
+        }
+    }
 });
+
+toggleSearch.addEventListener('click', () => {
+    if (!isMenuOrSearchActive || search.classList.contains('active')) {
+        search.classList.toggle('active');
+        isMenuOrSearchActive = search.classList.contains('active');
+
+        if (isMobile) {
+            toggleMenu.style.pointerEvents = isMenuOrSearchActive ? 'none' : 'auto';
+            toggleMenu.style.opacity = isMenuOrSearchActive ? '0.4' : '1';
+        }
+    }
+});
+
+handleResize();
